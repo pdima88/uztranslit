@@ -52,6 +52,11 @@ class UzCyrToLat
     const VOWELS = 'аеёиоуъыьэюяў';
     const CONSONANTS = 'бвгджзйклмнпрстфхцчшщқғҳ';
 
+    /**
+     * Transliterates from uzbek cyrillic to latin
+     * @param string $s Source text (can be HTML also)
+     * @return string Transliterated text
+     */
     static function translit($s)
     {
         if (self::$_r == null) {

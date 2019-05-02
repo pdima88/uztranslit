@@ -2,8 +2,6 @@
 
 namespace pdima88\uztranslit;
 
-use Nette\Utils\Paginator;
-
 class UzLatToCyr
 {
     static protected $_r = null;
@@ -53,56 +51,12 @@ class UzLatToCyr
     const VOWELS = 'aeoiu';
     const CONSONANTS = 'bvgdjzyklmnprstfxhq';
 
-    /*static protected function _translitWord($s) {
-        $res = '';
-        $prev = '';
-        $strLen = Strings::length($s);
-        $isUzbWord = false;
-
-        for ($i = 0; $i < $strLen; $i++) {
-            $c = Strings::substring($s, $i, 1);
-            if (Strings::indexOf(self::APOSTROPHES, $c)) {
-                if ($prev == 'g' || $prev == 'G' || $prev == 'o' || $prev == 'O') {
-                    $isUzbWord = true;
-                }
-            } elseif ($c == 'q' || $c == 'Q' || $c == 'h' || $c == 'H') {
-                //$isUzbWord = true;
-            }
-            $prev = $c;
-        }
-
-        $prev = '';
-        for ($i = 0; $i < $strLen; $i++) {
-            $c4 = Strings::substring($s, $i, 4);
-            $c3 = Strings::substring($c4, 1, 3);
-            $c2 = Strings::substring($c3, 1, 2);
-            $c1 = Strings::substring($c2, 1, 1);
-
-            if ((Strings::lower($c4) == 'shch') && isset(self::$_r[$c4])) {
-                if ($prev == '' || //начало слова
-                    $prev == 'e' || $prev == 'E' || // перед Е
-                    $i+4 == $strLen-1) { // в конце слова
-                    $r = self::$_r[$c4];
-                    $i+=3;
-                }
-            }
-
-            $next = (($i+1 < $strLen) ? Strings::substring($s, $i+1, 1) : '');
-            $after = (($i+2 < $strLen) ?  Strings::substring($s, $i+2, 1) : '');
-            $lchar = Strings::lower($char);
-            $lnext =
-
-            if ($lchar == 'y' ) {
-
-            }
-            if (Strings::indexOf("abcdefghijklmnopqrstuvwxyzабвгдеёжзийклмнпорстуфхцчшщъыьэюяўқғҳ'`ʻ", $lchar) >= 0) {
-                $word .= $char;
-            } else {
-                uzToCyrilWord($word);
-            }
-        }
-    }*/
-
+    /**
+     * Transliterates separate word
+     * @param string $s Source string, contains word
+     * @param string $res Output result string
+     * @return bool Is this word can be uzbek, if it contains w or c not in ch letter combination - this is not uzbek word.
+     */
     private static function translitWord($s, &$res)
     {
         $success = true;
@@ -125,9 +79,9 @@ class UzLatToCyr
                 $success = false;
             }
 
-            if (mb_strtolower($c.$c2.$c3) == 'yo\'') $s2 = '';
+            if (mb_strtolower($c.$c2.$c3) == 'yo\'') $s2 = ''; // yo'l
 
-            if (mb_strtolower($s4) == 'siya' && mb_strpos(self::CONSONANTS, $prev) !== false) {
+            if (mb_strtolower($s4) == 'siya' && mb_strpos(self::CONSONANTS, $prev) !== false) { // korrupsiya
                 if ($c == 's') $s2 = 'ts';
                 if ($c == 'S') $s2 = 'TS';
                 $i--;
@@ -169,7 +123,12 @@ class UzLatToCyr
         return $success;
     }
 
-
+    /**
+     * Transliterates uzbek latin to cyrillic
+     * @param string $s Source string
+     * @param bool $allWords Whether transliterate all words, including non uzbek
+     * @return string Transliterated string
+     */
     static function translit($s, $allWords = false) {
         if (self::$_r == null) {
             self::init();
@@ -206,6 +165,11 @@ class UzLatToCyr
         return $result;
     }
 
+    /**
+     * Transliterates text inside HTML code
+     * @param string $html Source HTML
+     * @return string HTML code with transliterated text inside HTML tags
+     */
     static function translitHtml($html) {
         $result = '';
         $buf = '';
