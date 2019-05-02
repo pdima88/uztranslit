@@ -1,0 +1,17 @@
+{
+    "name": "pdima88/uztranslit",
+    "description": "Transliteration utils for uzbek language",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Puchkin Dmitriy",
+            "email": "pdima88@mail.ru"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "pdima88\\uztranslit\\": "/src"
+        }
+    } 
+}
