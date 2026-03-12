@@ -52,6 +52,37 @@ class UzCyrToLat
     const VOWELS = 'аеёиоуъыьэюяў';
     const CONSONANTS = 'бвгджзйклмнпрстфхцчшщқғҳ';
 
+    static function utf8_iter_fast(string $s): \Generator {
+        $len = strlen($s);
+
+        for ($i = 0; $i < $len; ) {
+            $b1 = $s[$i];
+
+            $byte = ord($b1);
+
+            if ($byte < 0x80) {
+                yield $b1;
+                $i++;
+                continue;
+            }
+
+            if ($byte < 0xE0) {
+                yield $b1 . $s[$i+1];
+                $i += 2;
+                continue;
+            }
+
+            if ($byte < 0xF0) {
+                yield $b1 . $s[$i+1] . $s[$i+2];
+                $i += 3;
+                continue;
+            }
+
+            yield $b1 . $s[$i+1] . $s[$i+2] . $s[$i+3];
+            $i += 4;
+        }
+    }
+
     /**
      * Transliterates from uzbek cyrillic to latin
      * @param string $s Source text (can be HTML also)
@@ -66,9 +97,7 @@ class UzCyrToLat
         $res = '';
         $prev = '';
 
-        $str = preg_split( '//u', $s, null, PREG_SPLIT_NO_EMPTY);
-
-        foreach ($str as $c) {
+        foreach (self::utf8_iter_fast($s) as $c) {
             if (!isset(self::$_r[$c])) {
                 $res .= $c;
             } elseif (is_array(self::$_r[$c])) {
